@@ -1,6 +1,8 @@
 import 'dart:io';
 
+import 'package:PiliPalaX/common/widgets/network_img_layer.dart';
 import 'package:PiliPalaX/utils/download.dart';
+import 'package:PiliPalaX/utils/global_data.dart';
 import 'package:PiliPalaX/utils/storage.dart';
 import 'package:PiliPalaX/utils/utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -359,6 +361,13 @@ class _InteractiveviewerGalleryState extends State<InteractiveviewerGallery>
       child: Center(
         child: Hero(
           tag: sources[index],
+          placeholderBuilder: (context, heroSize, child) {
+            return NetworkImgLayer(
+              src: '${sources[index]}@${GlobalData().imgQuality}q.webp',
+              width: heroSize.width,
+              height: heroSize.height,
+            );
+          },
           child: CachedNetworkImage(
             fadeInDuration: const Duration(milliseconds: 0),
             fadeOutDuration: const Duration(milliseconds: 0),
@@ -367,11 +376,13 @@ class _InteractiveviewerGalleryState extends State<InteractiveviewerGallery>
                 : sources[index],
             fit: BoxFit.contain,
             progressIndicatorBuilder: (context, url, progress) {
-              return Container(
-                width: 150.0,
-                alignment: Alignment.center,
-                child: LinearProgressIndicator(value: progress.progress ?? 0),
-              );
+              return progress.progress != null
+                  ? Container(
+                      width: 150.0,
+                      alignment: Alignment.center,
+                      child: LinearProgressIndicator(value: progress.progress!),
+                    )
+                  : const SizedBox.shrink();
             },
             errorListener: (value) {
               WidgetsBinding.instance.addPostFrameCallback((_) {

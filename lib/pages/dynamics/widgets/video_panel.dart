@@ -82,16 +82,17 @@ Widget videoSeasonWidget(item, context, type, {floor = 1}) {
             double width = box.maxWidth;
             return Stack(
               children: [
-                Hero(
-                  tag: content.bvid,
-                  child: NetworkImgLayer(
-                    type: null,
-                    width: width,
-                    height: width / StyleString.aspectRatio,
-                    src: content.cover,
-                    semanticsLabel: content.title,
-                  ),
+                // Hero(
+                //   tag: content.bvid,
+                //   child:
+                NetworkImgLayer(
+                  type: null,
+                  width: width,
+                  height: width / StyleString.aspectRatio,
+                  src: content.cover,
+                  semanticsLabel: content.title,
                 ),
+                // ),
                 if (content.badge != null && type == 'pgc')
                   PBadge(
                     text: content.badge['text'],
