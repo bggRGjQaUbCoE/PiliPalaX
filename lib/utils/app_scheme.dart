@@ -301,20 +301,20 @@ class PiliScheme {
     // https | m.bilibili.com | /bangumi/play/ss39708
     // final String scheme = value.scheme!;
     final String host = value.host;
-    final String? path = value.path;
+    final String path = value.path;
     Map<String, String> query = value.queryParameters;
     RegExp regExp = RegExp(r'^((www\.)|(m\.))?bilibili\.com$');
     if (regExp.hasMatch(host)) {
       debugPrint('bilibili.com');
     } else if (host.contains('live')) {
-      int roomId = int.parse(path!.split('/').last);
+      int roomId = int.parse(path.split('/').last);
       Utils.toDupNamed(
         '/liveRoom?roomid=$roomId',
         arguments: {'liveItem': null, 'heroTag': roomId.toString()},
       );
       return;
     } else if (host.contains('space')) {
-      var mid = path!.split('/').last;
+      var mid = path.split('/').last;
       Utils.toDupNamed('/member?mid=$mid', arguments: {'face': ''});
       return;
     } else if (host == 'b23.tv') {
@@ -352,79 +352,77 @@ class PiliScheme {
       return;
     }
 
-    if (path != null) {
-      List<String> pathPart = path.split('/');
-      if (pathPart.length < 3) {
+    List<String> pathPart = path.split('/');
+    if (pathPart.length < 3) {
+      Utils.toDupNamed(
+        '/webviewnew',
+        parameters: {'url': value.toString()},
+      );
+      return;
+    }
+    final String area = pathPart[1] == 'mobile' ? pathPart[2] : pathPart[1];
+    switch (area) {
+      case 'bangumi':
+        debugPrint('番剧');
+        for (var pathSegment in pathPart) {
+          if (pathSegment.startsWith('ss')) {
+            bangumiPush(matchNum(pathSegment).first, null);
+            break;
+          } else if (pathSegment.startsWith('ep')) {
+            bangumiPush(null, matchNum(pathSegment).first);
+            break;
+          }
+        }
+        break;
+      case 'video':
+        debugPrint('投稿');
+        final Map<String, dynamic> map = IdUtils.matchAvorBv(input: path);
+        if (map.containsKey('AV')) {
+          videoPush(map['AV']! as int, null);
+        } else if (map.containsKey('BV')) {
+          videoPush(null, map['BV'] as String);
+        } else {
+          SmartDialog.showToast('投稿匹配失败');
+        }
+        break;
+      case 'read':
+        debugPrint('专栏');
+        late String id;
+        if (query['id'] != null) {
+          id = 'cv${matchNum(query['id']!).first}';
+        } else {
+          id = 'cv${matchNum(path).firstOrNull}';
+        }
+        Utils.toDupNamed('/htmlRender', parameters: {
+          'url': value.toString(),
+          'title': '',
+          'id': id,
+          'dynamicType': 'read'
+        });
+        break;
+      case 'space':
+        debugPrint('个人空间');
         Utils.toDupNamed(
-          '/webviewnew',
-          parameters: {'url': value.toString()},
-        );
-        return;
-      }
-      final String area = pathPart[1] == 'mobile' ? pathPart[2] : pathPart[1];
-      switch (area) {
-        case 'bangumi':
-          debugPrint('番剧');
-          for (var pathSegment in pathPart) {
-            if (pathSegment.startsWith('ss')) {
-              bangumiPush(matchNum(pathSegment).first, null);
-              break;
-            } else if (pathSegment.startsWith('ep')) {
-              bangumiPush(null, matchNum(pathSegment).first);
-              break;
-            }
-          }
-          break;
-        case 'video':
-          debugPrint('投稿');
-          final Map<String, dynamic> map = IdUtils.matchAvorBv(input: path);
-          if (map.containsKey('AV')) {
-            videoPush(map['AV']! as int, null);
-          } else if (map.containsKey('BV')) {
-            videoPush(null, map['BV'] as String);
-          } else {
-            SmartDialog.showToast('投稿匹配失败');
-          }
-          break;
-        case 'read':
-          debugPrint('专栏');
-          late String id;
-          if (query['id'] != null) {
-            id = 'cv${matchNum(query['id']!).first}';
-          } else {
-            id = 'cv${matchNum(path).firstOrNull}';
-          }
-          Utils.toDupNamed('/htmlRender', parameters: {
-            'url': value.toString(),
-            'title': '',
-            'id': id,
-            'dynamicType': 'read'
-          });
-          break;
-        case 'space':
-          debugPrint('个人空间');
+            '/member?mid=${pathPart[1] == 'mobile' ? pathPart.getOrNull(3) : pathPart.getOrNull(2)}',
+            arguments: {'face': ''});
+        break;
+      default:
+        var res = IdUtils.matchAvorBv(input: area.split('?').first);
+        if (res.containsKey('AV')) {
+          videoPush(res['AV']! as int, null);
+        } else if (res.containsKey('BV')) {
+          videoPush(null, res['BV'] as String);
+        } else {
+          SmartDialog.showToast('未知路径或匹配错误:$value，先采用浏览器打开');
           Utils.toDupNamed(
-              '/member?mid=${pathPart[1] == 'mobile' ? pathPart.getOrNull(3) : pathPart.getOrNull(2)}',
-              arguments: {'face': ''});
-          break;
-        default:
-          var res = IdUtils.matchAvorBv(input: area.split('?').first);
-          if (res.containsKey('AV')) {
-            videoPush(res['AV']! as int, null);
-          } else if (res.containsKey('BV')) {
-            videoPush(null, res['BV'] as String);
-          } else {
-            SmartDialog.showToast('未知路径或匹配错误:$value，先采用浏览器打开');
-            Utils.toDupNamed(
-              '/webviewnew',
-              parameters: {
-                'url': value.toString(),
-                'type': 'url',
-                'pageTitle': ''
-              },
-            );
-          }
-      }
+            '/webviewnew',
+            parameters: {
+              'url': value.toString(),
+              'type': 'url',
+              'pageTitle': ''
+            },
+          );
+        }
     }
   }
 

@@ -55,7 +55,9 @@ class AiDetail extends StatelessWidget {
                     if (modelResult!.outline!.isNotEmpty)
                       Divider(
                         height: 20,
-                        color: Theme.of(context).dividerColor.withOpacity(0.1),
+                        color: Theme.of(context)
+                            .dividerColor
+                            .withOpacity(0.1),
                         thickness: 6,
                       )
                   ],

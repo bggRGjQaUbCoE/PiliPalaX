@@ -4,17 +4,11 @@ import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:get/get.dart';
 import 'package:hive/hive.dart';
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:PiliPalaX/http/index.dart';
 import 'package:PiliPalaX/models/github/latest.dart';
 import 'package:PiliPalaX/pages/setting/controller.dart';
 import 'package:PiliPalaX/utils/storage.dart';
 import 'package:PiliPalaX/utils/utils.dart';
-import 'package:url_launcher/url_launcher.dart';
 import '../../utils/cache_manage.dart';
-
-const String _sourceCodeUrl = 'https://github.com/bggRGjQaUbCoE/PiliPalaX';
-const String _originSourceCodeUrl = 'https://github.com/guozhigq/pilipala';
-const String _upstreamUrl = 'https://github.com/orz12/PiliPalaX';
 
 class AboutPage extends StatefulWidget {
   const AboutPage({super.key});
@@ -25,6 +19,11 @@ class AboutPage extends StatefulWidget {
 
 class _AboutPageState extends State<AboutPage> {
   final AboutController _aboutController = Get.put(AboutController());
+  static const String _sourceCodeUrl =
+      'https://github.com/bggRGjQaUbCoE/PiliPalaX';
+  static const String _originSourceCodeUrl =
+      'https://github.com/guozhigq/pilipala';
+  static const String _upstreamUrl = 'https://github.com/orz12/PiliPalaX';
 
   @override
   void initState() {
@@ -115,13 +114,13 @@ class _AboutPageState extends State<AboutPage> {
             color: Theme.of(context).colorScheme.outlineVariant,
           ),
           ListTile(
-            onTap: () => _aboutController.githubUrl(_sourceCodeUrl),
+            onTap: () => Utils.launchURL(_sourceCodeUrl),
             leading: const Icon(Icons.code),
             title: const Text('Source Code'),
             subtitle: Text(_sourceCodeUrl, style: subTitleStyle),
           ),
           ListTile(
-            onTap: () => _aboutController.githubUrl(_originSourceCodeUrl),
+            onTap: () => Utils.launchURL(_originSourceCodeUrl),
             leading: const Icon(Icons.code),
             title: const Text('Origin'),
             subtitle: Text(
@@ -130,7 +129,7 @@ class _AboutPageState extends State<AboutPage> {
             ),
           ),
           ListTile(
-            onTap: () => _aboutController.githubUrl(_upstreamUrl),
+            onTap: () => Utils.launchURL(_upstreamUrl),
             leading: const Icon(Icons.code),
             title: const Text('Upstream'),
             subtitle: Text(
@@ -139,7 +138,23 @@ class _AboutPageState extends State<AboutPage> {
             ),
           ),
           ListTile(
-            onTap: () => _aboutController.feedback(context),
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return SimpleDialog(
+                    clipBehavior: Clip.hardEdge,
+                    title: const Text('问题反馈'),
+                    children: [
+                      ListTile(
+                        title: const Text('GitHub Issue'),
+                        onTap: () => Utils.launchURL('$_sourceCodeUrl/issues'),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
             leading: const Icon(Icons.feedback_outlined),
             title: const Text('问题反馈'),
             trailing: Icon(
@@ -149,7 +164,9 @@ class _AboutPageState extends State<AboutPage> {
             ),
           ),
           ListTile(
-            onTap: () => _aboutController.logs(),
+            onTap: () {
+              Get.toNamed('/logs');
+            },
             leading: const Icon(Icons.bug_report_outlined),
             title: const Text('错误日志'),
             trailing: Icon(Icons.arrow_forward, size: 16, color: outline),
@@ -257,22 +274,26 @@ class _AboutPageState extends State<AboutPage> {
                         child: const Text('取消'),
                       ),
                       TextButton(
-                        onPressed: () {
+                        onPressed: () async {
                           Get.back();
-                          GStorage.setting.clear();
-                          GStorage.video.clear();
+                          await Future.wait([
+                            GStorage.setting.clear(),
+                            GStorage.video.clear(),
+                          ]);
                           SmartDialog.showToast('重置成功');
                         },
                         child: const Text('重置可导出的设置'),
                       ),
                       TextButton(
-                        onPressed: () {
+                        onPressed: () async {
                           Get.back();
-                          GStorage.userInfo.clear();
-                          GStorage.setting.clear();
-                          GStorage.localCache.clear();
-                          GStorage.video.clear();
-                          GStorage.historyWord.clear();
+                          await Future.wait([
+                            GStorage.userInfo.clear(),
+                            GStorage.setting.clear(),
+                            GStorage.localCache.clear(),
+                            GStorage.video.clear(),
+                            GStorage.historyWord.clear(),
+                          ]);
                           SmartDialog.showToast('重置成功');
                         },
                         child: const Text('重置所有数据（含登录信息）'),
@@ -298,7 +319,6 @@ class AboutController extends GetxController {
   RxBool isUpdate = true.obs;
   RxBool isLoading = true.obs;
   LatestDataModel? data;
-  // RxInt count = 0.obs;
   RxString cacheSize = ''.obs;
 
   @override
@@ -330,91 +350,21 @@ class AboutController extends GetxController {
     currentVersion.value = "${currentInfo.version}+$buildNumber";
   }
 
-  // 获取远程版本
-  Future getRemoteApp() async {
-    var result = await Request().get(Api.latestApp, extra: {'ua': 'pc'});
-    if (result.data.isEmpty) {
-      SmartDialog.showToast('检查更新失败，github接口未返回数据，请检查网络');
-      return false;
-    } else if (result.data[0] == null) {
-      SmartDialog.showToast('检查更新失败，github接口返回如下内容：\n${result.data}');
-      return false;
-    }
-    data = LatestDataModel.fromJson(result.data[0]);
-    remoteAppInfo = data;
-    remoteVersion.value = data!.tagName!;
-    isUpdate.value =
-        Utils.needUpdate(currentVersion.value, remoteVersion.value);
-    isLoading.value = false;
-  }
-
-  // 跳转下载/本地更新
-  Future onUpdate() async {
-    if (data != null) {
-      Utils.matchVersion(data);
-    }
-  }
-
-  // 跳转github
-  githubUrl(String url) {
-    launchUrl(
-      Uri.parse(url),
-      mode: LaunchMode.externalApplication,
-    );
-  }
-
-  githubRelease() {
-    launchUrl(
-      Uri.parse('$_sourceCodeUrl/release'),
-      mode: LaunchMode.externalApplication,
-    );
-  }
-
-  // 问题反馈
-  feedback(BuildContext context) async {
-    await showDialog(
-      context: context,
-      builder: (context) {
-        return SimpleDialog(
-          clipBehavior: Clip.hardEdge,
-          title: const Text('问题反馈'),
-          children: [
-            ListTile(
-              title: const Text('GitHub Issue'),
-              onTap: () => launchUrl(
-                Uri.parse('$_sourceCodeUrl/issues'),
-                // 系统自带浏览器打开
-                mode: LaunchMode.externalApplication,
-              ),
-            ),
-            // ListTile(
-            //   title: const Text('腾讯兔小巢'),
-            //   onTap: () => launchUrl(
-            //     Uri.parse('https://support.qq.com/embed/phone/637735'),
-            //     // 系统自带浏览器打开
-            //     mode: LaunchMode.externalApplication,
-            //   ),
-            // ),
-          ],
-        );
-      },
-    );
-  }
-
-  // 日志
-  logs() {
-    Get.toNamed('/logs');
-  }
-
-  // tapOnVersion() {
-  //   if (settingController.hiddenSettingUnlocked.value) {
-  //     SmartDialog.showToast('您已解锁开发人员选项, 无需再次操作');
-  //     return;
+  // // 获取远程版本
+  // Future getRemoteApp() async {
+  //   var result = await Request().get(Api.latestApp, extra: {'ua': 'pc'});
+  //   if (result.data.isEmpty) {
+  //     SmartDialog.showToast('检查更新失败，github接口未返回数据，请检查网络');
+  //     return false;
+  //   } else if (result.data[0] == null) {
+  //     SmartDialog.showToast('检查更新失败，github接口返回如下内容：\n${result.data}');
+  //     return false;
   //   }
-  //   count.value++;
-  //   if (count.value == 5) {
-  //     setting.put(SettingBoxKey.hiddenSettingUnlocked, true);
-  //     SmartDialog.showToast('恭喜您发现了开发人员选项!');
-  //   }
+  //   data = LatestDataModel.fromJson(result.data[0]);
+  //   remoteAppInfo = data;
+  //   remoteVersion.value = data!.tagName!;
+  //   isUpdate.value =
+  //       Utils.needUpdate(currentVersion.value, remoteVersion.value);
+  //   isLoading.value = false;
   // }
 }

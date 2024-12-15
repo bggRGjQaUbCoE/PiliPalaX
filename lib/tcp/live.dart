@@ -191,6 +191,7 @@ class LiveMessageStream {
         for (final server in servers) {
           try {
             return await WebSocket.connect(server);
+            // ignore: empty_catches
           } catch (e) {}
         }
         throw Exception("all servers connect failed");

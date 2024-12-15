@@ -312,11 +312,17 @@ class VideoPanelController extends GetxController {
               bgColor: currentPubTimeFilterval == -1 &&
                       (isFirst ? customPubBegin : customPubEnd)
                   ? Theme.of(context).colorScheme.secondaryContainer
-                  : Theme.of(context).colorScheme.outline.withOpacity(0.1),
+                  : Theme.of(context)
+                      .colorScheme
+                      .outline
+                      .withOpacity(0.1),
               textColor: currentPubTimeFilterval == -1 &&
                       (isFirst ? customPubBegin : customPubEnd)
                   ? Theme.of(context).colorScheme.onSecondaryContainer
-                  : Theme.of(context).colorScheme.outline.withOpacity(0.8),
+                  : Theme.of(context)
+                      .colorScheme
+                      .outline
+                      .withOpacity(0.8),
             );
           }
 

@@ -346,7 +346,8 @@ class _ListSheetContentState extends State<ListSheetContent>
                     .map((item) => Tab(text: item.title))
                     .toList(),
                 dividerHeight: 1,
-                dividerColor: Theme.of(context).dividerColor.withOpacity(0.1),
+                dividerColor:
+                    Theme.of(context).dividerColor.withOpacity(0.1),
               ),
             ),
           Expanded(

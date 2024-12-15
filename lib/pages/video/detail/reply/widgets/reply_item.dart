@@ -352,7 +352,10 @@ class ReplyItem extends StatelessWidget {
               Icon(
                 Icons.reply,
                 size: 18,
-                color: Theme.of(context).colorScheme.outline.withOpacity(0.8),
+                color: Theme.of(context)
+                    .colorScheme
+                    .outline
+                    .withOpacity(0.8),
               ),
               const SizedBox(width: 3),
               Text(

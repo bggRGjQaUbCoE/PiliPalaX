@@ -225,28 +225,28 @@ class _UpPanelState extends State<UpPanel> {
   }
 }
 
-class _SliverHeaderDelegate extends SliverPersistentHeaderDelegate {
-  _SliverHeaderDelegate({required this.height, required this.child});
+// class _SliverHeaderDelegate extends SliverPersistentHeaderDelegate {
+//   _SliverHeaderDelegate({required this.height, required this.child});
 
-  final double height;
-  final Widget child;
+//   final double height;
+//   final Widget child;
 
-  @override
-  Widget build(
-      BuildContext context, double shrinkOffset, bool overlapsContent) {
-    return child;
-  }
+//   @override
+//   Widget build(
+//       BuildContext context, double shrinkOffset, bool overlapsContent) {
+//     return child;
+//   }
 
-  @override
-  double get maxExtent => height;
+//   @override
+//   double get maxExtent => height;
 
-  @override
-  double get minExtent => height;
+//   @override
+//   double get minExtent => height;
 
-  @override
-  bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) =>
-      true;
-}
+//   @override
+//   bool shouldRebuild(covariant SliverPersistentHeaderDelegate oldDelegate) =>
+//       true;
+// }
 
 class UpPanelSkeleton extends StatelessWidget {
   const UpPanelSkeleton({super.key});

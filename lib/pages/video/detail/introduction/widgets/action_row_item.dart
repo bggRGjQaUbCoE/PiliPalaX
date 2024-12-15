@@ -25,7 +25,10 @@ class ActionRowItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: selectStatus
-          ? Theme.of(context).colorScheme.primaryContainer.withOpacity(0.6)
+          ? Theme.of(context)
+              .colorScheme
+              .primaryContainer
+              .withOpacity(0.6)
           : Theme.of(context).highlightColor.withOpacity(0.2),
       borderRadius: const BorderRadius.all(Radius.circular(30)),
       clipBehavior: Clip.hardEdge,

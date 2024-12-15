@@ -1445,7 +1445,9 @@ class _VideoDetailPageState extends State<VideoDetailPage>
                     if (rawIndex % 2 == 1) {
                       return Divider(
                         height: 1,
-                        color: Theme.of(context).dividerColor.withOpacity(0.1),
+                        color: Theme.of(context)
+                            .dividerColor
+                            .withOpacity(0.1),
                       );
                     }
                     int index = rawIndex ~/ 2;

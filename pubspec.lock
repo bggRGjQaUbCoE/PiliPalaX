@@ -106,18 +106,18 @@ packages:
     dependency: "direct main"
     description:
       name: audio_service
-      sha256: "9dd5ba7e77567b290c35908b1950d61485b4dfdd3a0ac398e98cfeec04651b75"
+      sha256: f6c8191bef6b843da34675dd0731ad11d06094c36b691ffcf3148a4feb2e585f
       url: "https://pub.dev"
     source: hosted
-    version: "0.18.15"
+    version: "0.18.16"
   audio_service_platform_interface:
     dependency: transitive
     description:
       name: audio_service_platform_interface
-      sha256: "8431a455dac9916cc9ee6f7da5620a666436345c906ad2ebb7fa41d18b3c1bf4"
+      sha256: "6283782851f6c8b501b60904a32fc7199dc631172da0629d7301e66f672ab777"
       url: "https://pub.dev"
     source: hosted
-    version: "0.1.1"
+    version: "0.1.3"
   audio_service_web:
     dependency: transitive
     description:
@@ -914,10 +914,10 @@ packages:
     dependency: transitive
     description:
       name: image
-      sha256: "599d08e369969bdf83138f5b4e0a7e823d3f992f23b8a64dd626877c37013533"
+      sha256: "20842a5ad1555be624c314b0c0cc0566e8ece412f61e859a42efeb6d4101a26c"
       url: "https://pub.dev"
     source: hosted
-    version: "4.4.0"
+    version: "4.5.0"
   image_cropper:
     dependency: "direct main"
     description:

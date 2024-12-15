@@ -291,8 +291,10 @@ class _LoginPageState extends State<LoginPage> {
             child: Container(
               decoration: UnderlineTabIndicator(
                 borderSide: BorderSide(
-                    color:
-                        Theme.of(context).colorScheme.outline.withOpacity(0.4)),
+                    color: Theme.of(context)
+                        .colorScheme
+                        .outline
+                        .withOpacity(0.4)),
               ),
               child: Row(
                 children: [
@@ -362,8 +364,10 @@ class _LoginPageState extends State<LoginPage> {
             child: Container(
               decoration: UnderlineTabIndicator(
                 borderSide: BorderSide(
-                    color:
-                        Theme.of(context).colorScheme.outline.withOpacity(0.4)),
+                    color: Theme.of(context)
+                        .colorScheme
+                        .outline
+                        .withOpacity(0.4)),
               ),
               child: Row(
                 children: [

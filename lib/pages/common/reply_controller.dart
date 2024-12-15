@@ -126,7 +126,6 @@ abstract class ReplyController extends CommonController {
           sortType = ReplySortType.time;
           mode = Mode.MAIN_LIST_TIME;
           break;
-        default:
       }
       sortTypeTitle.value = sortType.titles;
       sortTypeLabel.value = sortType.labels;

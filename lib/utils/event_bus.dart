@@ -1,5 +1,5 @@
 // 订阅者回调签名
-typedef void EventCallback(arg);
+typedef EventCallback = void Function(dynamic arg);
 
 class EventBus {
   // 私有构造函数

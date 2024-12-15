@@ -269,7 +269,8 @@ class ProgressBar extends LeafRenderObjectWidget {
       barHeight: barHeight,
       baseBarColor: baseBarColor ?? primaryColor.withOpacity(0.24),
       progressBarColor: progressBarColor ?? primaryColor,
-      bufferedBarColor: bufferedBarColor ?? primaryColor.withOpacity(0.24),
+      bufferedBarColor:
+          bufferedBarColor ?? primaryColor.withOpacity(0.24),
       barCapShape: barCapShape,
       thumbRadius: thumbRadius,
       thumbColor: thumbColor ?? primaryColor,
@@ -302,7 +303,8 @@ class ProgressBar extends LeafRenderObjectWidget {
       ..barHeight = barHeight
       ..baseBarColor = baseBarColor ?? primaryColor.withOpacity(0.24)
       ..progressBarColor = progressBarColor ?? primaryColor
-      ..bufferedBarColor = bufferedBarColor ?? primaryColor.withOpacity(0.24)
+      ..bufferedBarColor =
+          bufferedBarColor ?? primaryColor.withOpacity(0.24)
       ..barCapShape = barCapShape
       ..thumbRadius = thumbRadius
       ..thumbColor = thumbColor ?? primaryColor

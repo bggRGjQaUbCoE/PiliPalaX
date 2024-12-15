@@ -529,7 +529,8 @@ class _SponsorBlockPageState extends State<SponsorBlockPage> {
             ),
             separatorBuilder: (context, index) => Divider(
               height: 1,
-              color: Theme.of(context).colorScheme.outline.withOpacity(0.1),
+              color:
+                  Theme.of(context).colorScheme.outline.withOpacity(0.1),
             ),
           ),
           _dividerL,

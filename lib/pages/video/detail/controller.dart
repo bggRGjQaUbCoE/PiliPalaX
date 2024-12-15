@@ -1527,37 +1527,37 @@ class VideoDetailController extends GetxController
         },
       );
 
-  List<SegmentType> _actionType2SegmentType(ActionType actionType) {
-    return switch (actionType) {
-      ActionType.skip => [
-          SegmentType.sponsor,
-          SegmentType.selfpromo,
-          SegmentType.interaction,
-          SegmentType.intro,
-          SegmentType.outro,
-          SegmentType.preview,
-          SegmentType.filler,
-        ],
-      ActionType.mute => [
-          SegmentType.sponsor,
-          SegmentType.selfpromo,
-          SegmentType.interaction,
-          SegmentType.intro,
-          SegmentType.outro,
-          SegmentType.preview,
-          SegmentType.music_offtopic,
-          SegmentType.filler,
-        ],
-      ActionType.full => [
-          SegmentType.sponsor,
-          SegmentType.selfpromo,
-          SegmentType.exclusive_access,
-        ],
-      ActionType.poi => [
-          SegmentType.poi_highlight,
-        ],
-    };
-  }
+  // List<SegmentType> _actionType2SegmentType(ActionType actionType) {
+  //   return switch (actionType) {
+  //     ActionType.skip => [
+  //         SegmentType.sponsor,
+  //         SegmentType.selfpromo,
+  //         SegmentType.interaction,
+  //         SegmentType.intro,
+  //         SegmentType.outro,
+  //         SegmentType.preview,
+  //         SegmentType.filler,
+  //       ],
+  //     ActionType.mute => [
+  //         SegmentType.sponsor,
+  //         SegmentType.selfpromo,
+  //         SegmentType.interaction,
+  //         SegmentType.intro,
+  //         SegmentType.outro,
+  //         SegmentType.preview,
+  //         SegmentType.music_offtopic,
+  //         SegmentType.filler,
+  //       ],
+  //     ActionType.full => [
+  //         SegmentType.sponsor,
+  //         SegmentType.selfpromo,
+  //         SegmentType.exclusive_access,
+  //       ],
+  //     ActionType.poi => [
+  //         SegmentType.poi_highlight,
+  //       ],
+  //   };
+  // }
 
   List<ActionType> _segmentType2ActionType(SegmentType segmentType) {
     return switch (segmentType) {

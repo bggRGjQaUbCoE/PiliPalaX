@@ -127,6 +127,9 @@ class _InteractiveviewerGalleryState extends State<InteractiveviewerGallery>
     if (Platform.isIOS || Platform.isAndroid) {
       StatusBarControl.setHidden(false, animation: StatusBarAnimation.FADE);
     }
+    for (int index = 0; index < widget.sources.length; index++) {
+      CachedNetworkImageProvider(_getActualUrl(index)).evict();
+    }
     super.dispose();
   }
 
@@ -206,6 +209,10 @@ class _InteractiveviewerGalleryState extends State<InteractiveviewerGallery>
     }
   }
 
+  String _getActualUrl(int index) => _thumbList[index] && _quality != 100
+      ? '${widget.sources[index]}@${_quality}q.webp'
+      : widget.sources[index];
+
   @override
   Widget build(BuildContext context) {
     return Stack(
@@ -252,7 +259,7 @@ class _InteractiveviewerGalleryState extends State<InteractiveviewerGallery>
                         index == currentIndex,
                         _enablePageView,
                       )
-                    : _itemBuilder(widget.sources, index),
+                    : _itemBuilder(index),
               );
             },
           ),
@@ -358,17 +365,15 @@ class _InteractiveviewerGalleryState extends State<InteractiveviewerGallery>
     Share.shareXFiles([XFile(path)], subject: imgUrl);
   }
 
-  Widget _itemBuilder(sources, index) {
+  Widget _itemBuilder(index) {
     return Center(
       child: Hero(
-        tag: sources[index],
+        tag: widget.sources[index],
         child: CachedNetworkImage(
           fadeInDuration: const Duration(milliseconds: 0),
           fadeOutDuration: const Duration(milliseconds: 0),
-          imageUrl: _thumbList[index] && _quality != 100
-              ? '${sources[index]}@${_quality}q.webp'
-              : sources[index],
-          fit: BoxFit.contain,
+          imageUrl: _getActualUrl(index),
+          // fit: BoxFit.contain,
           progressIndicatorBuilder: (context, url, progress) {
             return Center(
               child: SizedBox(
@@ -377,13 +382,13 @@ class _InteractiveviewerGalleryState extends State<InteractiveviewerGallery>
               ),
             );
           },
-          errorListener: (value) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              setState(() {
-                _thumbList[index] = false;
-              });
-            });
-          },
+          // errorListener: (value) {
+          //   WidgetsBinding.instance.addPostFrameCallback((_) {
+          //     setState(() {
+          //       _thumbList[index] = false;
+          //     });
+          //   });
+          // },
         ),
       ),
     );

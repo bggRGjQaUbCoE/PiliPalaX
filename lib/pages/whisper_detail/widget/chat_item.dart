@@ -144,7 +144,8 @@ class ChatItem extends StatelessWidget {
             style: TextStyle(
               letterSpacing: 0.6,
               height: 5,
-              color: Theme.of(context).colorScheme.outline.withOpacity(0.8),
+              color:
+                  Theme.of(context).colorScheme.outline.withOpacity(0.8),
             ),
           );
         case MsgType.text:
@@ -343,7 +344,8 @@ class ChatItem extends StatelessWidget {
                                   style: TextStyle(
                                     letterSpacing: 0.6,
                                     height: 1.5,
-                                    color: textColor(context).withOpacity(0.6),
+                                    color: textColor(context)
+                                        .withOpacity(0.6),
                                     fontSize: 12,
                                   ),
                                 ),
@@ -352,7 +354,8 @@ class ChatItem extends StatelessWidget {
                                   style: TextStyle(
                                     letterSpacing: 0.6,
                                     height: 1.5,
-                                    color: textColor(context).withOpacity(0.6),
+                                    color: textColor(context)
+                                        .withOpacity(0.6),
                                     fontSize: 12,
                                   ),
                                 ),
@@ -497,7 +500,10 @@ class SystemNotice extends StatelessWidget {
                     .copyWith(color: Theme.of(context).colorScheme.outline),
               ),
               Divider(
-                color: Theme.of(context).colorScheme.primary.withOpacity(0.05),
+                color: Theme.of(context)
+                    .colorScheme
+                    .primary
+                    .withOpacity(0.05),
               ),
               SelectableText(
                 content['text'],

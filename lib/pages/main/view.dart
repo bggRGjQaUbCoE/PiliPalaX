@@ -227,8 +227,10 @@ class _MainAppState extends State<MainApp>
                   width: 1,
                   indent: MediaQuery.of(context).padding.top,
                   endIndent: MediaQuery.of(context).padding.bottom,
-                  color:
-                      Theme.of(context).colorScheme.outline.withOpacity(0.06),
+                  color: Theme.of(context)
+                      .colorScheme
+                      .outline
+                      .withOpacity(0.06),
                 ),
                 Expanded(
                   child: PageView(
