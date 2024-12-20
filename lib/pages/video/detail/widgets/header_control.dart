@@ -132,7 +132,12 @@ class _HeaderControlState extends State<HeaderControl> {
             color: Theme.of(context).colorScheme.surface,
             borderRadius: const BorderRadius.all(Radius.circular(12)),
           ),
-          margin: const EdgeInsets.all(12),
+          margin: EdgeInsets.only(
+            left: 12,
+            top: 12,
+            right: 12,
+            bottom: 12 + MediaQuery.paddingOf(context).bottom,
+          ),
           child: Column(
             children: <Widget>[
               SizedBox(
@@ -152,331 +157,367 @@ class _HeaderControlState extends State<HeaderControl> {
                 ),
               ),
               Expanded(
-                  child: Material(
-                child: ListView(
-                  children: [
-                    // ListTile(
-                    //   onTap: () {},
-                    //   dense: true,
-                    //   enabled: false,
-                    //   leading:
-                    //       const Icon(Icons.network_cell_outlined, size: 20),
-                    //   title: Text('省流模式', style: titleStyle),
-                    //   subtitle: Text('低画质 ｜ 减少视频缓存', style: subTitleStyle),
-                    //   trailing: Transform.scale(
-                    //     scale: 0.75,
-                    //     child: Switch(
-                    //       thumbIcon: WidgetStateProperty.resolveWith<Icon?>(
-                    //           (Set<WidgetState> states) {
-                    //         if (states.isNotEmpty &&
-                    //             states.first == WidgetState.selected) {
-                    //           return const Icon(Icons.done);
-                    //         }
-                    //         return null; // All other states will use the default thumbIcon.
-                    //       }),
-                    //       value: false,
-                    //       onChanged: (value) => {},
-                    //     ),
-                    //   ),
-                    // ),
-                    if (widget.videoDetailCtr?.userInfo != null)
-                      ListTile(
-                        onTap: () {
-                          Get.back();
-                          Get.toNamed('/webviewnew', parameters: {
-                            'url':
-                                'https://www.bilibili.com/appeal/?avid=${IdUtils.bv2av(widget.videoDetailCtr!.bvid)}&bvid=${widget.videoDetailCtr!.bvid}'
-                          });
-                        },
-                        dense: true,
-                        leading: const Icon(Icons.error_outline, size: 20),
-                        title: const Text('举报', style: titleStyle),
-                      ),
-                    ListTile(
-                      onTap: () async {
-                        Get.back();
-                        final res = await UserHttp.toViewLater(
-                            bvid: widget.videoDetailCtr!.bvid);
-                        SmartDialog.showToast(res['msg']);
-                      },
-                      dense: true,
-                      leading: const Icon(Icons.watch_later_outlined, size: 20),
-                      title: const Text('添加至「稍后再看」', style: titleStyle),
-                    ),
-                    ListTile(
-                      onTap: () => {Get.back(), scheduleExit()},
-                      dense: true,
-                      leading:
-                          const Icon(Icons.hourglass_top_outlined, size: 20),
-                      title: const Text('定时关闭', style: titleStyle),
-                    ),
-                    ListTile(
-                      onTap: () =>
-                          {Get.back(), widget.videoDetailCtr!.queryVideoUrl()},
-                      dense: true,
-                      leading: const Icon(Icons.refresh_outlined, size: 20),
-                      title: const Text('重载视频', style: titleStyle),
-                    ),
-                    ListTile(
-                      title: const Text('CDN 设置', style: titleStyle),
-                      leading: Icon(MdiIcons.cloudPlusOutline, size: 20),
-                      subtitle: Text(
-                        '当前：${CDNServiceCode.fromCode(defaultCDNService)!.description}，无法播放请切换',
-                        style: subTitleStyle,
-                      ),
-                      onTap: () async {
-                        Get.back();
-                        String? result = await showDialog(
-                          context: context,
-                          builder: (context) {
-                            return SelectDialog<String>(
-                                title: 'CDN 设置',
-                                value: defaultCDNService,
-                                values: CDNService.values.map((e) {
-                                  return {
-                                    'title': e.description,
-                                    'value': e.code
-                                  };
-                                }).toList());
+                child: Material(
+                  child: MediaQuery.removePadding(
+                    context: context,
+                    removeBottom: true,
+                    child: ListView(
+                      children: [
+                        // ListTile(
+                        //   onTap: () {},
+                        //   dense: true,
+                        //   enabled: false,
+                        //   leading:
+                        //       const Icon(Icons.network_cell_outlined, size: 20),
+                        //   title: Text('省流模式', style: titleStyle),
+                        //   subtitle: Text('低画质 ｜ 减少视频缓存', style: subTitleStyle),
+                        //   trailing: Transform.scale(
+                        //     scale: 0.75,
+                        //     child: Switch(
+                        //       thumbIcon: WidgetStateProperty.resolveWith<Icon?>(
+                        //           (Set<WidgetState> states) {
+                        //         if (states.isNotEmpty &&
+                        //             states.first == WidgetState.selected) {
+                        //           return const Icon(Icons.done);
+                        //         }
+                        //         return null; // All other states will use the default thumbIcon.
+                        //       }),
+                        //       value: false,
+                        //       onChanged: (value) => {},
+                        //     ),
+                        //   ),
+                        // ),
+                        // if (widget.videoDetailCtr?.userInfo != null)
+                        ListTile(
+                          dense: true,
+                          onTap: () {
+                            if (widget.videoDetailCtr?.userInfo == null) {
+                              SmartDialog.showToast('账号未登录');
+                              return;
+                            }
+                            Get.back();
+                            Get.toNamed('/webviewnew', parameters: {
+                              'url':
+                                  'https://www.bilibili.com/appeal/?avid=${IdUtils.bv2av(widget.videoDetailCtr!.bvid)}&bvid=${widget.videoDetailCtr!.bvid}'
+                            });
                           },
-                        );
-                        if (result != null) {
-                          defaultCDNService = result;
-                          setting.put(SettingBoxKey.CDNService, result);
-                          SmartDialog.showToast(
-                              '已设置为 ${CDNServiceCode.fromCode(result)!.description}，正在重载视频');
-                          setState(() {});
-                          widget.videoDetailCtr!.queryVideoUrl();
-                        }
-                      },
-                    ),
-                    ListTile(
-                      onTap: () {
-                        Get.back();
-                        Player? player =
-                            widget.controller?.videoPlayerController;
-                        if (player == null) {
-                          SmartDialog.showToast('播放器未初始化');
-                          return;
-                        }
-                        var pp = player.platform as NativePlayer;
-                        pp.setProperty("video", "no");
-                      },
-                      dense: true,
-                      leading: const Icon(Icons.headphones_outlined, size: 20),
-                      title: const Text('听视频（需返回首页才能终止该状态）', style: titleStyle),
-                    ),
-                    ListTile(
-                      onTap: () => {Get.back(), showSetVideoQa()},
-                      dense: true,
-                      leading: const Icon(Icons.play_circle_outline, size: 20),
-                      title: const Text('选择画质', style: titleStyle),
-                      subtitle: Text(
-                          '当前画质 ${widget.videoDetailCtr!.currentVideoQa.description}',
-                          style: subTitleStyle),
-                    ),
-                    if (widget.videoDetailCtr!.currentAudioQa != null)
-                      ListTile(
-                        onTap: () => {Get.back(), showSetAudioQa()},
-                        dense: true,
-                        leading: const Icon(Icons.album_outlined, size: 20),
-                        title: const Text('选择音质', style: titleStyle),
-                        subtitle: Text(
-                            '当前音质 ${widget.videoDetailCtr!.currentAudioQa!.description}',
-                            style: subTitleStyle),
-                      ),
-                    ListTile(
-                      onTap: () => {Get.back(), showSetDecodeFormats()},
-                      dense: true,
-                      leading: const Icon(Icons.av_timer_outlined, size: 20),
-                      title: const Text('解码格式', style: titleStyle),
-                      subtitle: Text(
-                          '当前解码格式 ${widget.videoDetailCtr!.currentDecodeFormats.description}',
-                          style: subTitleStyle),
-                    ),
-                    ListTile(
-                      onTap: () => {Get.back(), showSetRepeat()},
-                      dense: true,
-                      leading: const Icon(Icons.repeat, size: 20),
-                      title: const Text('播放顺序', style: titleStyle),
-                      subtitle: Text(widget.controller!.playRepeat.description,
-                          style: subTitleStyle),
-                    ),
-                    ListTile(
-                      onTap: () => {Get.back(), showSetDanmaku()},
-                      dense: true,
-                      leading: const Icon(Icons.subtitles_outlined, size: 20),
-                      title: const Text('弹幕设置', style: titleStyle),
-                    ),
-                    ListTile(
-                        title: const Text('播放信息', style: titleStyle),
-                        leading: const Icon(Icons.info_outline, size: 20),
-                        onTap: () {
-                          Player? player =
-                              widget.controller?.videoPlayerController;
-                          if (player == null) {
-                            SmartDialog.showToast('播放器未初始化');
-                            return;
-                          }
-                          showDialog(
-                            context: context,
-                            builder: (context) {
-                              return AlertDialog(
-                                title: const Text('播放信息'),
-                                content: SizedBox(
-                                  width: double.maxFinite,
-                                  child: ListView(
-                                    children: [
-                                      ListTile(
-                                        title: const Text("Resolution"),
-                                        subtitle: Text(
-                                            '${player.state.width}x${player.state.height}'),
-                                        onTap: () {
-                                          Clipboard.setData(
-                                            ClipboardData(
-                                              text:
-                                                  "Resolution\n${player.state.width}x${player.state.height}",
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                      ListTile(
-                                        title: const Text("VideoParams"),
-                                        subtitle: Text(player.state.videoParams
-                                            .toString()),
-                                        onTap: () {
-                                          Clipboard.setData(
-                                            ClipboardData(
-                                              text:
-                                                  "VideoParams\n${player.state.videoParams}",
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                      ListTile(
-                                        title: const Text("AudioParams"),
-                                        subtitle: Text(player.state.audioParams
-                                            .toString()),
-                                        onTap: () {
-                                          Clipboard.setData(
-                                            ClipboardData(
-                                              text:
-                                                  "AudioParams\n${player.state.audioParams}",
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                      ListTile(
-                                        title: const Text("Media"),
-                                        subtitle: Text(
-                                            player.state.playlist.toString()),
-                                        onTap: () {
-                                          Clipboard.setData(
-                                            ClipboardData(
-                                              text:
-                                                  "Media\n${player.state.playlist}",
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                      ListTile(
-                                        title: const Text("AudioTrack"),
-                                        subtitle: Text(player.state.track.audio
-                                            .toString()),
-                                        onTap: () {
-                                          Clipboard.setData(
-                                            ClipboardData(
-                                              text:
-                                                  "AudioTrack\n${player.state.track.audio}",
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                      ListTile(
-                                        title: const Text("VideoTrack"),
-                                        subtitle: Text(player.state.track.video
-                                            .toString()),
-                                        onTap: () {
-                                          Clipboard.setData(
-                                            ClipboardData(
-                                              text:
-                                                  "VideoTrack\n${player.state.track.audio}",
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                      ListTile(
-                                          title: const Text("pitch"),
+                          leading: const Icon(Icons.error_outline, size: 20),
+                          title: const Text('举报', style: titleStyle),
+                        ),
+                        ListTile(
+                          dense: true,
+                          onTap: () async {
+                            Get.back();
+                            final res = await UserHttp.toViewLater(
+                                bvid: widget.videoDetailCtr!.bvid);
+                            SmartDialog.showToast(res['msg']);
+                          },
+                          leading:
+                              const Icon(Icons.watch_later_outlined, size: 20),
+                          title: const Text('添加至「稍后再看」', style: titleStyle),
+                        ),
+                        ListTile(
+                          dense: true,
+                          onTap: () => {Get.back(), scheduleExit()},
+                          leading: const Icon(Icons.hourglass_top_outlined,
+                              size: 20),
+                          title: const Text('定时关闭', style: titleStyle),
+                        ),
+                        ListTile(
+                          dense: true,
+                          onTap: () => {
+                            Get.back(),
+                            widget.videoDetailCtr!.queryVideoUrl()
+                          },
+                          leading: const Icon(Icons.refresh_outlined, size: 20),
+                          title: const Text('重载视频', style: titleStyle),
+                        ),
+                        ListTile(
+                          dense: true,
+                          title: const Text('CDN 设置', style: titleStyle),
+                          leading: Icon(MdiIcons.cloudPlusOutline, size: 20),
+                          subtitle: Text(
+                            '当前：${CDNServiceCode.fromCode(defaultCDNService)!.description}，无法播放请切换',
+                            style: subTitleStyle,
+                          ),
+                          onTap: () async {
+                            Get.back();
+                            String? result = await showDialog(
+                              context: context,
+                              builder: (context) {
+                                return SelectDialog<String>(
+                                    title: 'CDN 设置',
+                                    value: defaultCDNService,
+                                    values: CDNService.values.map((e) {
+                                      return {
+                                        'title': e.description,
+                                        'value': e.code
+                                      };
+                                    }).toList());
+                              },
+                            );
+                            if (result != null) {
+                              defaultCDNService = result;
+                              setting.put(SettingBoxKey.CDNService, result);
+                              SmartDialog.showToast(
+                                  '已设置为 ${CDNServiceCode.fromCode(result)!.description}，正在重载视频');
+                              setState(() {});
+                              widget.videoDetailCtr!.queryVideoUrl();
+                            }
+                          },
+                        ),
+                        ListTile(
+                          dense: true,
+                          onTap: () {
+                            Get.back();
+                            Player? player =
+                                widget.controller?.videoPlayerController;
+                            if (player == null) {
+                              SmartDialog.showToast('播放器未初始化');
+                              return;
+                            }
+                            var pp = player.platform as NativePlayer;
+                            pp.setProperty("video", "no");
+                          },
+                          leading:
+                              const Icon(Icons.headphones_outlined, size: 20),
+                          title: const Text('听视频（需返回首页才能终止该状态）',
+                              style: titleStyle),
+                        ),
+                        ListTile(
+                          dense: true,
+                          onTap: () => {Get.back(), showSetVideoQa()},
+                          leading:
+                              const Icon(Icons.play_circle_outline, size: 20),
+                          title: const Text('选择画质', style: titleStyle),
+                          subtitle: Text(
+                              '当前画质 ${widget.videoDetailCtr!.currentVideoQa.description}',
+                              style: subTitleStyle),
+                        ),
+                        if (widget.videoDetailCtr!.currentAudioQa != null)
+                          ListTile(
+                            dense: true,
+                            onTap: () => {Get.back(), showSetAudioQa()},
+                            leading: const Icon(Icons.album_outlined, size: 20),
+                            title: const Text('选择音质', style: titleStyle),
+                            subtitle: Text(
+                                '当前音质 ${widget.videoDetailCtr!.currentAudioQa!.description}',
+                                style: subTitleStyle),
+                          ),
+                        ListTile(
+                          dense: true,
+                          onTap: () => {Get.back(), showSetDecodeFormats()},
+                          leading:
+                              const Icon(Icons.av_timer_outlined, size: 20),
+                          title: const Text('解码格式', style: titleStyle),
+                          subtitle: Text(
+                              '当前解码格式 ${widget.videoDetailCtr!.currentDecodeFormats.description}',
+                              style: subTitleStyle),
+                        ),
+                        ListTile(
+                          dense: true,
+                          onTap: () => {Get.back(), showSetRepeat()},
+                          leading: const Icon(Icons.repeat, size: 20),
+                          title: const Text('播放顺序', style: titleStyle),
+                          subtitle: Text(
+                              widget.controller!.playRepeat.description,
+                              style: subTitleStyle),
+                        ),
+                        ListTile(
+                          dense: true,
+                          onTap: () => {Get.back(), showSetDanmaku()},
+                          leading:
+                              const Icon(Icons.subtitles_outlined, size: 20),
+                          title: const Text('弹幕设置', style: titleStyle),
+                        ),
+                        ListTile(
+                          dense: true,
+                          title: const Text('播放信息', style: titleStyle),
+                          leading: const Icon(Icons.info_outline, size: 20),
+                          onTap: () {
+                            Player? player =
+                                widget.controller?.videoPlayerController;
+                            if (player == null) {
+                              SmartDialog.showToast('播放器未初始化');
+                              return;
+                            }
+                            showDialog(
+                              context: context,
+                              builder: (context) {
+                                return AlertDialog(
+                                  title: const Text('播放信息'),
+                                  content: SizedBox(
+                                    width: double.maxFinite,
+                                    child: ListView(
+                                      children: [
+                                        ListTile(
+                                          dense: true,
+                                          title: const Text("Resolution"),
                                           subtitle: Text(
-                                              player.state.pitch.toString()),
+                                              '${player.state.width}x${player.state.height}'),
                                           onTap: () {
                                             Clipboard.setData(
                                               ClipboardData(
                                                 text:
-                                                    "pitch\n${player.state.pitch}",
+                                                    "Resolution\n${player.state.width}x${player.state.height}",
                                               ),
                                             );
-                                          }),
-                                      ListTile(
-                                          title: const Text("rate"),
-                                          subtitle: Text(
-                                              player.state.rate.toString()),
+                                          },
+                                        ),
+                                        ListTile(
+                                          dense: true,
+                                          title: const Text("VideoParams"),
+                                          subtitle: Text(player
+                                              .state.videoParams
+                                              .toString()),
                                           onTap: () {
                                             Clipboard.setData(
                                               ClipboardData(
                                                 text:
-                                                    "rate\n${player.state.rate}",
+                                                    "VideoParams\n${player.state.videoParams}",
                                               ),
                                             );
-                                          }),
-                                      ListTile(
-                                        title: const Text("AudioBitrate"),
-                                        subtitle: Text(player.state.audioBitrate
-                                            .toString()),
-                                        onTap: () {
-                                          Clipboard.setData(
-                                            ClipboardData(
-                                              text:
-                                                  "AudioBitrate\n${player.state.audioBitrate}",
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                      ListTile(
-                                        title: const Text("Volume"),
-                                        subtitle: Text(
-                                            player.state.volume.toString()),
-                                        onTap: () {
-                                          Clipboard.setData(
-                                            ClipboardData(
-                                              text:
-                                                  "Volume\n${player.state.volume}",
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () => Get.back(),
-                                    child: Text(
-                                      '确定',
-                                      style: TextStyle(
-                                          color: Theme.of(context)
-                                              .colorScheme
-                                              .outline),
+                                          },
+                                        ),
+                                        ListTile(
+                                          dense: true,
+                                          title: const Text("AudioParams"),
+                                          subtitle: Text(player
+                                              .state.audioParams
+                                              .toString()),
+                                          onTap: () {
+                                            Clipboard.setData(
+                                              ClipboardData(
+                                                text:
+                                                    "AudioParams\n${player.state.audioParams}",
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                        ListTile(
+                                          dense: true,
+                                          title: const Text("Media"),
+                                          subtitle: Text(
+                                              player.state.playlist.toString()),
+                                          onTap: () {
+                                            Clipboard.setData(
+                                              ClipboardData(
+                                                text:
+                                                    "Media\n${player.state.playlist}",
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                        ListTile(
+                                          dense: true,
+                                          title: const Text("AudioTrack"),
+                                          subtitle: Text(player
+                                              .state.track.audio
+                                              .toString()),
+                                          onTap: () {
+                                            Clipboard.setData(
+                                              ClipboardData(
+                                                text:
+                                                    "AudioTrack\n${player.state.track.audio}",
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                        ListTile(
+                                          dense: true,
+                                          title: const Text("VideoTrack"),
+                                          subtitle: Text(player
+                                              .state.track.video
+                                              .toString()),
+                                          onTap: () {
+                                            Clipboard.setData(
+                                              ClipboardData(
+                                                text:
+                                                    "VideoTrack\n${player.state.track.audio}",
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                        ListTile(
+                                            dense: true,
+                                            title: const Text("pitch"),
+                                            subtitle: Text(
+                                                player.state.pitch.toString()),
+                                            onTap: () {
+                                              Clipboard.setData(
+                                                ClipboardData(
+                                                  text:
+                                                      "pitch\n${player.state.pitch}",
+                                                ),
+                                              );
+                                            }),
+                                        ListTile(
+                                            dense: true,
+                                            title: const Text("rate"),
+                                            subtitle: Text(
+                                                player.state.rate.toString()),
+                                            onTap: () {
+                                              Clipboard.setData(
+                                                ClipboardData(
+                                                  text:
+                                                      "rate\n${player.state.rate}",
+                                                ),
+                                              );
+                                            }),
+                                        ListTile(
+                                          dense: true,
+                                          title: const Text("AudioBitrate"),
+                                          subtitle: Text(player
+                                              .state.audioBitrate
+                                              .toString()),
+                                          onTap: () {
+                                            Clipboard.setData(
+                                              ClipboardData(
+                                                text:
+                                                    "AudioBitrate\n${player.state.audioBitrate}",
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                        ListTile(
+                                          dense: true,
+                                          title: const Text("Volume"),
+                                          subtitle: Text(
+                                              player.state.volume.toString()),
+                                          onTap: () {
+                                            Clipboard.setData(
+                                              ClipboardData(
+                                                text:
+                                                    "Volume\n${player.state.volume}",
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                ],
-                              );
-                            },
-                          );
-                        })
-                  ],
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Get.back(),
+                                      child: Text(
+                                        '确定',
+                                        style: TextStyle(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .outline),
+                                      ),
+                                    ),
+                                  ],
+                                );
+                              },
+                            );
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
-              ))
+              ),
             ],
           ),
         );
@@ -524,6 +565,7 @@ class _HeaderControlState extends State<HeaderControl> {
                       const SizedBox(height: 10),
                       for (final int choice in scheduleTimeChoices) ...<Widget>[
                         ListTile(
+                          dense: true,
                           onTap: () {
                             shutdownTimerService.scheduledExitInMinutes =
                                 choice;
@@ -531,7 +573,6 @@ class _HeaderControlState extends State<HeaderControl> {
                             Get.back();
                           },
                           contentPadding: const EdgeInsets.only(),
-                          dense: true,
                           title: Text(choice == -1 ? "禁用" : "$choice分钟后"),
                           trailing: shutdownTimerService
                                       .scheduledExitInMinutes ==
@@ -551,12 +592,12 @@ class _HeaderControlState extends State<HeaderControl> {
                       )),
                       const SizedBox(height: 10),
                       ListTile(
+                        dense: true,
                         onTap: () {
                           shutdownTimerService.waitForPlayingCompleted =
                               !shutdownTimerService.waitForPlayingCompleted;
                           setState(() {});
                         },
-                        dense: true,
                         contentPadding: const EdgeInsets.only(),
                         title: const Text("额外等待视频播放完毕", style: titleStyle),
                         trailing: Switch(
@@ -681,6 +722,7 @@ class _HeaderControlState extends State<HeaderControl> {
                       children: [
                         for (int i = 0; i < totalQaSam; i++) ...[
                           ListTile(
+                            dense: true,
                             onTap: () {
                               if (currentVideoQa.code ==
                                   videoFormat[i].quality) {
@@ -701,7 +743,6 @@ class _HeaderControlState extends State<HeaderControl> {
                               widget.videoDetailCtr!.updatePlayer();
                               Get.back();
                             },
-                            dense: true,
                             // 可能包含会员解锁画质
                             enabled: i >= totalQaSam - userfulQaSam,
                             contentPadding:
@@ -761,6 +802,7 @@ class _HeaderControlState extends State<HeaderControl> {
                     children: <Widget>[
                       for (final AudioItem i in audio) ...<Widget>[
                         ListTile(
+                          dense: true,
                           onTap: () {
                             if (currentAudioQa.code == i.id) {
                               return;
@@ -779,7 +821,6 @@ class _HeaderControlState extends State<HeaderControl> {
                             widget.videoDetailCtr!.updatePlayer();
                             Get.back();
                           },
-                          dense: true,
                           contentPadding:
                               const EdgeInsets.only(left: 20, right: 20),
                           title: Text(i.quality!),
@@ -847,6 +888,7 @@ class _HeaderControlState extends State<HeaderControl> {
                     children: [
                       for (var i in list) ...[
                         ListTile(
+                          dense: true,
                           onTap: () {
                             if (i.startsWith(currentDecodeFormats.code)) return;
                             widget.videoDetailCtr!.currentDecodeFormats =
@@ -854,7 +896,6 @@ class _HeaderControlState extends State<HeaderControl> {
                             widget.videoDetailCtr!.updatePlayer();
                             Get.back();
                           },
-                          dense: true,
                           contentPadding:
                               const EdgeInsets.only(left: 20, right: 20),
                           title: Text(VideoDecodeFormatsCode.fromString(i)!
@@ -940,7 +981,9 @@ class _HeaderControlState extends State<HeaderControl> {
               left: 12,
               top: 12,
               right: 12,
-              bottom: widget.controller?.isFullScreen.value == true ? 70 : 12,
+              bottom:
+                  (widget.controller?.isFullScreen.value == true ? 70 : 12) +
+                      MediaQuery.paddingOf(context).bottom,
             ),
             padding: const EdgeInsets.only(left: 14, right: 14),
             child: SingleChildScrollView(
@@ -1427,11 +1470,11 @@ class _HeaderControlState extends State<HeaderControl> {
                     children: <Widget>[
                       for (final PlayRepeat i in PlayRepeat.values) ...[
                         ListTile(
+                          dense: true,
                           onTap: () {
                             widget.controller!.setPlayRepeat(i);
                             Get.back();
                           },
-                          dense: true,
                           contentPadding:
                               const EdgeInsets.only(left: 20, right: 20),
                           title: Text(i.description),
@@ -1481,45 +1524,45 @@ class _HeaderControlState extends State<HeaderControl> {
         title: Row(
           children: [
             SizedBox(
+              width: 42,
+              height: 34,
+              child: IconButton(
+                tooltip: '返回',
+                icon: const Icon(
+                  FontAwesomeIcons.arrowLeft,
+                  size: 15,
+                  color: Colors.white,
+                ),
+                onPressed: () {
+                  if (isFullScreen) {
+                    widget.controller!.triggerFullScreen(status: false);
+                  } else if (MediaQuery.of(context).orientation ==
+                          Orientation.landscape &&
+                      !horizontalScreen) {
+                    verticalScreenForTwoSeconds();
+                  } else {
+                    Get.back();
+                  }
+                },
+              ),
+            ),
+            if (!isFullScreen ||
+                MediaQuery.of(context).orientation != Orientation.portrait)
+              SizedBox(
                 width: 42,
                 height: 34,
                 child: IconButton(
-                  tooltip: '上一页',
+                  tooltip: '返回主页',
                   icon: const Icon(
-                    FontAwesomeIcons.arrowLeft,
+                    FontAwesomeIcons.house,
                     size: 15,
                     color: Colors.white,
                   ),
                   onPressed: () {
-                    if (isFullScreen) {
-                      widget.controller!.triggerFullScreen(status: false);
-                    } else if (MediaQuery.of(context).orientation ==
-                            Orientation.landscape &&
-                        !horizontalScreen) {
-                      verticalScreenForTwoSeconds();
-                    } else {
-                      Get.back();
-                    }
+                    Get.until((route) => route.isFirst);
                   },
-                )),
-            if (!isFullScreen ||
-                MediaQuery.of(context).orientation != Orientation.portrait)
-              SizedBox(
-                  width: 42,
-                  height: 34,
-                  child: IconButton(
-                    tooltip: '返回主页',
-                    icon: const Icon(
-                      FontAwesomeIcons.house,
-                      size: 15,
-                      color: Colors.white,
-                    ),
-                    onPressed: () async {
-                      // 销毁播放器实例
-                      // await widget.controller!.dispose(type: 'all');
-                      Get.until((route) => route.isFirst);
-                    },
-                  )),
+                ),
+              ),
             if ((videoIntroController.videoDetail.value.title != null) &&
                 (isFullScreen || equivalentFullScreen))
               Column(
@@ -1579,9 +1622,7 @@ class _HeaderControlState extends State<HeaderControl> {
                   ),
                 ),
               ),
-              const SizedBox(
-                width: 15,
-              ),
+              const SizedBox(width: 15),
             ],
             // ComBtn(
             //   icon: const Icon(
@@ -1780,7 +1821,7 @@ class _HeaderControlState extends State<HeaderControl> {
                 style: ButtonStyle(
                   padding: WidgetStateProperty.all(EdgeInsets.zero),
                 ),
-                onPressed: () => showSettingSheet(),
+                onPressed: showSettingSheet,
                 icon: const Icon(
                   Icons.more_vert_outlined,
                   size: 19,

@@ -165,6 +165,7 @@ class _RecommendSettingState extends State<RecommendSetting> {
                       children: [
                         const Text('使用|隔开，如：尝试|测试'),
                         TextField(
+                          autofocus: true,
                           controller: textController,
                           textInputAction: TextInputAction.newline,
                           minLines: 1,

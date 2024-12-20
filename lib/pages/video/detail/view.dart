@@ -25,6 +25,7 @@ import 'package:floating/floating.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
@@ -936,38 +937,73 @@ class _VideoDetailPageState extends State<VideoDetailPage>
                   primary: false,
                   foregroundColor: Colors.white,
                   backgroundColor: Colors.transparent,
-                  actions: videoDetailController.userInfo == null
-                      ? null
-                      : [
-                          PopupMenuButton<String>(
-                            onSelected: (String type) async {
-                              switch (type) {
-                                case 'later':
-                                  var res = await UserHttp.toViewLater(
-                                      bvid: videoDetailController.bvid);
-                                  SmartDialog.showToast(res['msg']);
-                                  break;
-                                case 'report':
-                                  Get.toNamed('/webviewnew', parameters: {
-                                    'url':
-                                        'https://www.bilibili.com/appeal/?avid=${IdUtils.bv2av(videoDetailController.bvid)}&bvid=${videoDetailController.bvid}'
-                                  });
-                                  break;
-                              }
-                            },
-                            itemBuilder: (BuildContext context) =>
-                                <PopupMenuEntry<String>>[
-                              const PopupMenuItem<String>(
-                                value: 'later',
-                                child: Text('稍后再看'),
-                              ),
-                              const PopupMenuItem<String>(
-                                value: 'report',
-                                child: Text('举报'),
-                              ),
-                            ],
+                  automaticallyImplyLeading: false,
+                  title: Row(
+                    children: [
+                      SizedBox(
+                        width: 42,
+                        height: 34,
+                        child: IconButton(
+                          tooltip: '返回',
+                          icon: const Icon(
+                            FontAwesomeIcons.arrowLeft,
+                            size: 15,
+                            color: Colors.white,
                           ),
-                        ],
+                          onPressed: Get.back,
+                        ),
+                      ),
+                      SizedBox(
+                        width: 42,
+                        height: 34,
+                        child: IconButton(
+                          tooltip: '返回主页',
+                          icon: const Icon(
+                            FontAwesomeIcons.house,
+                            size: 15,
+                            color: Colors.white,
+                          ),
+                          onPressed: () {
+                            Get.until((route) => route.isFirst);
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
+                  actions: [
+                    PopupMenuButton<String>(
+                      onSelected: (String type) async {
+                        switch (type) {
+                          case 'later':
+                            var res = await UserHttp.toViewLater(
+                                bvid: videoDetailController.bvid);
+                            SmartDialog.showToast(res['msg']);
+                            break;
+                          case 'report':
+                            if (videoDetailController.userInfo == null) {
+                              SmartDialog.showToast('账号未登录');
+                            } else {
+                              Get.toNamed('/webviewnew', parameters: {
+                                'url':
+                                    'https://www.bilibili.com/appeal/?avid=${IdUtils.bv2av(videoDetailController.bvid)}&bvid=${videoDetailController.bvid}'
+                              });
+                            }
+                            break;
+                        }
+                      },
+                      itemBuilder: (BuildContext context) =>
+                          <PopupMenuEntry<String>>[
+                        const PopupMenuItem<String>(
+                          value: 'later',
+                          child: Text('稍后再看'),
+                        ),
+                        const PopupMenuItem<String>(
+                          value: 'report',
+                          child: Text('举报'),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
               Positioned(

@@ -1159,18 +1159,24 @@ class _PLVideoPlayerState extends State<PLVideoPlayer>
                   visible: plPlayerController.showControls.value &&
                       (plPlayerController.isFullScreen.value ||
                           plPlayerController.controlsLock.value),
-                  child: ComBtn(
-                    icon: Icon(
-                      plPlayerController.controlsLock.value
-                          ? FontAwesomeIcons.lock
-                          : FontAwesomeIcons.lockOpen,
-                      semanticLabel:
-                          plPlayerController.controlsLock.value ? '解锁' : '锁定',
-                      size: 15,
-                      color: Colors.white,
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: const Color(0x45000000),
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                    fuc: () => plPlayerController
-                        .onLockControl(!plPlayerController.controlsLock.value),
+                    child: ComBtn(
+                      icon: Icon(
+                        plPlayerController.controlsLock.value
+                            ? FontAwesomeIcons.lock
+                            : FontAwesomeIcons.lockOpen,
+                        semanticLabel:
+                            plPlayerController.controlsLock.value ? '解锁' : '锁定',
+                        size: 15,
+                        color: Colors.white,
+                      ),
+                      fuc: () => plPlayerController.onLockControl(
+                          !plPlayerController.controlsLock.value),
+                    ),
                   ),
                 ),
               ),
@@ -1187,66 +1193,74 @@ class _PLVideoPlayerState extends State<PLVideoPlayer>
               child: Visibility(
                 visible: plPlayerController.showControls.value &&
                     plPlayerController.isFullScreen.value,
-                child: ComBtn(
-                  icon: const Icon(
-                    Icons.photo_camera,
-                    semanticLabel: '截图',
-                    size: 20,
-                    color: Colors.white,
+                child: DecoratedBox(
+                  decoration: BoxDecoration(
+                    color: const Color(0x45000000),
+                    borderRadius: BorderRadius.circular(8),
                   ),
-                  fuc: () {
-                    SmartDialog.showToast('截图中');
-                    plPlayerController.videoPlayerController
-                        ?.screenshot(format: 'image/png')
-                        .then((value) {
-                      if (value != null && context.mounted) {
-                        SmartDialog.showToast('点击弹窗保存截图');
-                        showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              // title: const Text('点击保存'),
-                              titlePadding: EdgeInsets.zero,
-                              contentPadding: const EdgeInsets.all(8),
-                              insetPadding:
-                                  EdgeInsets.only(left: context.width / 2),
-                              //移除圆角
-                              shape: const RoundedRectangleBorder(),
-                              content: GestureDetector(
-                                onTap: () async {
-                                  String name = DateTime.now().toString();
-                                  final SaveResult result =
-                                      await SaverGallery.saveImage(
-                                    value,
-                                    fileName: name,
-                                    androidRelativePath: "Pictures/Screenshots",
-                                    skipIfExists: false,
-                                  );
+                  child: ComBtn(
+                    icon: const Icon(
+                      Icons.photo_camera,
+                      semanticLabel: '截图',
+                      size: 20,
+                      color: Colors.white,
+                    ),
+                    fuc: () {
+                      SmartDialog.showToast('截图中');
+                      plPlayerController.videoPlayerController
+                          ?.screenshot(format: 'image/png')
+                          .then((value) {
+                        if (value != null && context.mounted) {
+                          SmartDialog.showToast('点击弹窗保存截图');
+                          showDialog(
+                            context: context,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                // title: const Text('点击保存'),
+                                titlePadding: EdgeInsets.zero,
+                                contentPadding: const EdgeInsets.all(8),
+                                insetPadding:
+                                    EdgeInsets.only(left: context.width / 2),
+                                //移除圆角
+                                shape: const RoundedRectangleBorder(),
+                                content: GestureDetector(
+                                  onTap: () async {
+                                    String name = DateTime.now().toString();
+                                    final SaveResult result =
+                                        await SaverGallery.saveImage(
+                                      value,
+                                      fileName: name,
+                                      androidRelativePath:
+                                          "Pictures/Screenshots",
+                                      skipIfExists: false,
+                                    );
 
-                                  if (result.isSuccess) {
-                                    Get.back();
-                                    SmartDialog.showToast('$name.png已保存到相册/截图');
-                                  } else {
-                                    await SmartDialog.showToast(
-                                        '保存失败，${result.errorMessage}');
-                                  }
-                                },
-                                child: ConstrainedBox(
-                                  constraints: BoxConstraints(
-                                    maxWidth: context.width / 3,
-                                    maxHeight: context.height / 3,
+                                    if (result.isSuccess) {
+                                      Get.back();
+                                      SmartDialog.showToast(
+                                          '$name.png已保存到相册/截图');
+                                    } else {
+                                      await SmartDialog.showToast(
+                                          '保存失败，${result.errorMessage}');
+                                    }
+                                  },
+                                  child: ConstrainedBox(
+                                    constraints: BoxConstraints(
+                                      maxWidth: context.width / 3,
+                                      maxHeight: context.height / 3,
+                                    ),
+                                    child: Image.memory(value),
                                   ),
-                                  child: Image.memory(value),
                                 ),
-                              ),
-                            );
-                          },
-                        );
-                      } else {
-                        SmartDialog.showToast('截图失败');
-                      }
-                    });
-                  },
+                              );
+                            },
+                          );
+                        } else {
+                          SmartDialog.showToast('截图失败');
+                        }
+                      });
+                    },
+                  ),
                 ),
               ),
             ),
