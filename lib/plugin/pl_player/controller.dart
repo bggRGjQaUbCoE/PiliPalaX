@@ -553,11 +553,11 @@ class PlPlayerController {
     int bufferSize =
         setting.get(SettingBoxKey.expandBuffer, defaultValue: false)
             ? (videoType.value == 'live' ? 64 * 1024 * 1024 : 32 * 1024 * 1024)
-            : (videoType.value == 'live' ? 16 * 1024 * 1024 : 3 * 1024 * 1024);
+            : (videoType.value == 'live' ? 16 * 1024 * 1024 : 4 * 1024 * 1024);
     Player player = _videoPlayerController ??
         Player(
           configuration: PlayerConfiguration(
-            // 默认缓冲 3M 大小
+            // 默认缓冲 4M 大小
             bufferSize: bufferSize,
           ),
         );

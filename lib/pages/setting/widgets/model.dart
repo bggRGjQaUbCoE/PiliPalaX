@@ -933,7 +933,7 @@ List<SettingsModel> get videoSettings => [
         settingsType: SettingsType.sw1tch,
         title: '扩大缓冲区',
         leading: Icon(Icons.storage_outlined),
-        subtitle: '默认缓冲区为视频3MB/直播16MB，开启后为32MB/64MB，加载时间变长',
+        subtitle: '默认缓冲区为视频4MB/直播16MB，开启后为32MB/64MB，加载时间变长',
         setKey: SettingBoxKey.expandBuffer,
         defaultVal: false,
       ),
