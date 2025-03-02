@@ -20,8 +20,7 @@ class VideoReplyController extends ReplyController
 
   bool _isFabVisible = true;
   late final AnimationController fabAnimationCtr = AnimationController(
-      vsync: this, duration: const Duration(milliseconds: 100))
-    ..forward();
+      vsync: this, duration: const Duration(milliseconds: 100));
 
   void showFab() {
     if (!_isFabVisible) {

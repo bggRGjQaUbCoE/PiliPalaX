@@ -20,6 +20,7 @@ import 'package:PiliPlus/pages/video/detail/member/horizontal_member_page.dart';
 import 'package:PiliPlus/pages/video/detail/reply_reply/view.dart';
 import 'package:PiliPlus/pages/video/detail/widgets/ai_detail.dart';
 import 'package:PiliPlus/utils/extension.dart';
+import 'package:PiliPlus/utils/feed_back.dart';
 import 'package:PiliPlus/utils/global_data.dart';
 import 'package:PiliPlus/utils/id_utils.dart';
 import 'package:PiliPlus/utils/utils.dart';
@@ -194,6 +195,7 @@ class _VideoDetailPageVState extends State<VideoDetailPageV>
         videoDetailController.scrollKey.currentState?.innerController
             .addListener(innerScrollListener);
       });
+      videoDetailController.tabCtr.addListener(tabCtrListener);
     }
 
     videoDetailController.animationController.addListener(animListener);
@@ -384,6 +386,7 @@ class _VideoDetailPageVState extends State<VideoDetailPageV>
     videoDetailController.skipTimer = null;
 
     try {
+      videoDetailController.tabCtr.removeListener(tabCtrListener);
       videoDetailController.animationController.removeListener(animListener);
       if (videoDetailController.showReply) {
         videoDetailController.scrollKey.currentState?.innerController
@@ -610,6 +613,16 @@ class _VideoDetailPageVState extends State<VideoDetailPageV>
     } else if (direction == ScrollDirection.reverse) {
       if (mounted) {
         _videoReplyController.hideFab();
+      }
+    }
+  }
+
+  void tabCtrListener() {
+    if (videoDetailController.scrollCtr.hasClients) {
+      if (videoDetailController.tabCtr.index != 1) {
+        _videoReplyController.hideFab();
+      } else {
+        _videoReplyController.showFab();
       }
     }
   }
@@ -933,6 +946,28 @@ class _VideoDetailPageVState extends State<VideoDetailPageV>
                     ),
                   ),
                 ],
+              ),
+              floatingActionButton: SlideTransition(
+                position: Tween<Offset>(
+                  begin: const Offset(0, 2),
+                  end: const Offset(0, 0),
+                ).animate(CurvedAnimation(
+                  parent: _videoReplyController.fabAnimationCtr,
+                  curve: Curves.easeInOut,
+                )),
+                child: FloatingActionButton(
+                  heroTag: null,
+                  onPressed: () {
+                    feedBack();
+                    _videoReplyController.onReply(
+                      context,
+                      oid: _videoReplyController.aid,
+                      replyType: ReplyType.video,
+                    );
+                  },
+                  tooltip: '发表评论',
+                  child: const Icon(Icons.reply),
+                ),
               ),
             ),
           ),

@@ -69,6 +69,7 @@ class _VideoReplyPanelState extends State<VideoReplyPanel>
 
     if (widget.needController != false) {
       _videoReplyController.scrollController.addListener(listener);
+      _videoReplyController.fabAnimationCtr.forward();
     }
   }
 
@@ -114,97 +115,99 @@ class _VideoReplyPanelState extends State<VideoReplyPanel>
       onRefresh: () async {
         await _videoReplyController.onRefresh();
       },
-      child: Stack(
-        children: [
-          CustomScrollView(
-            controller: widget.needController == false
-                ? null
-                : _videoReplyController.scrollController,
-            physics: widget.needController == false
-                ? const AlwaysScrollableScrollPhysics(
-                    parent: ClampingScrollPhysics(),
-                  )
-                : const AlwaysScrollableScrollPhysics(),
-            key: const PageStorageKey<String>('评论'),
-            slivers: <Widget>[
-              SliverPersistentHeader(
-                pinned: false,
-                floating: true,
-                delegate: CustomSliverPersistentHeaderDelegate(
-                  extent: 40,
-                  bgColor: Theme.of(context).colorScheme.surface,
-                  child: Container(
-                    height: 40,
-                    padding: const EdgeInsets.fromLTRB(12, 0, 6, 0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Obx(
-                          () => Text(
-                            _videoReplyController.sortType.value.title,
-                            style: const TextStyle(fontSize: 13),
-                          ),
-                        ),
-                        SizedBox(
-                          height: 35,
-                          child: TextButton.icon(
-                            onPressed: () =>
-                                _videoReplyController.queryBySort(),
-                            icon: Icon(
-                              Icons.sort,
-                              size: 16,
-                              color: Theme.of(context).colorScheme.secondary,
-                            ),
-                            label: Obx(
-                              () => Text(
-                                _videoReplyController.sortType.value.label,
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color:
-                                      Theme.of(context).colorScheme.secondary,
-                                ),
-                              ),
-                            ),
-                          ),
-                        )
-                      ],
+      child: widget.needController == false
+          ? _buildPage
+          : Stack(
+              children: [
+                _buildPage,
+                Positioned(
+                  bottom: MediaQuery.of(context).padding.bottom + 14,
+                  right: 14,
+                  child: SlideTransition(
+                    position: Tween<Offset>(
+                      begin: const Offset(0, 2),
+                      end: const Offset(0, 0),
+                    ).animate(CurvedAnimation(
+                      parent: _videoReplyController.fabAnimationCtr,
+                      curve: Curves.easeInOut,
+                    )),
+                    child: FloatingActionButton(
+                      heroTag: null,
+                      onPressed: () {
+                        feedBack();
+                        _videoReplyController.onReply(
+                          context,
+                          oid: _videoReplyController.aid,
+                          replyType: ReplyType.video,
+                        );
+                      },
+                      tooltip: '发表评论',
+                      child: const Icon(Icons.reply),
                     ),
                   ),
                 ),
-              ),
-              Obx(() => _buildBody(_videoReplyController.loadingState.value)),
-            ],
-          ),
-          Positioned(
-            bottom: MediaQuery.of(context).padding.bottom + 14,
-            right: 14,
-            child: SlideTransition(
-              position: Tween<Offset>(
-                begin: const Offset(0, 2),
-                end: const Offset(0, 0),
-              ).animate(CurvedAnimation(
-                parent: _videoReplyController.fabAnimationCtr,
-                curve: Curves.easeInOut,
-              )),
-              child: FloatingActionButton(
-                heroTag: null,
-                onPressed: () {
-                  feedBack();
-                  _videoReplyController.onReply(
-                    context,
-                    oid: _videoReplyController.aid,
-                    replyType: ReplyType.video,
-                  );
-                },
-                tooltip: '发表评论',
-                child: const Icon(Icons.reply),
+              ],
+            ),
+    );
+  }
+
+  Widget get _buildPage => CustomScrollView(
+        controller: widget.needController == false
+            ? null
+            : _videoReplyController.scrollController,
+        physics: widget.needController == false
+            ? const AlwaysScrollableScrollPhysics(
+                parent: ClampingScrollPhysics(),
+              )
+            : const AlwaysScrollableScrollPhysics(),
+        key: const PageStorageKey<String>('评论'),
+        slivers: <Widget>[
+          SliverPersistentHeader(
+            pinned: false,
+            floating: true,
+            delegate: CustomSliverPersistentHeaderDelegate(
+              extent: 40,
+              bgColor: Theme.of(context).colorScheme.surface,
+              child: Container(
+                height: 40,
+                padding: const EdgeInsets.fromLTRB(12, 0, 6, 0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Obx(
+                      () => Text(
+                        _videoReplyController.sortType.value.title,
+                        style: const TextStyle(fontSize: 13),
+                      ),
+                    ),
+                    SizedBox(
+                      height: 35,
+                      child: TextButton.icon(
+                        onPressed: () => _videoReplyController.queryBySort(),
+                        icon: Icon(
+                          Icons.sort,
+                          size: 16,
+                          color: Theme.of(context).colorScheme.secondary,
+                        ),
+                        label: Obx(
+                          () => Text(
+                            _videoReplyController.sortType.value.label,
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: Theme.of(context).colorScheme.secondary,
+                            ),
+                          ),
+                        ),
+                      ),
+                    )
+                  ],
+                ),
               ),
             ),
           ),
+          Obx(() => _buildBody(_videoReplyController.loadingState.value)),
         ],
-      ),
-    );
-  }
+      );
 
   Widget _buildBody(LoadingState loadingState) {
     return switch (loadingState) {
